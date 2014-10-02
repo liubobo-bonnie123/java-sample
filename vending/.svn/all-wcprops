@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/UnibergForAndroid/!svn/ver/163/Galaxy_Tablet/Uniberg/src/com/forside/android/vending
+END
+VendingContext.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/UnibergForAndroid/!svn/ver/163/Galaxy_Tablet/Uniberg/src/com/forside/android/vending/VendingContext.java
+END
+IVendingService.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/UnibergForAndroid/!svn/ver/163/Galaxy_Tablet/Uniberg/src/com/forside/android/vending/IVendingService.java
+END
+VendingProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/UnibergForAndroid/!svn/ver/163/Galaxy_Tablet/Uniberg/src/com/forside/android/vending/VendingProvider.java
+END
+VerizonVendingService.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/UnibergForAndroid/!svn/ver/163/Galaxy_Tablet/Uniberg/src/com/forside/android/vending/VerizonVendingService.java
+END
+ILicenseCheck.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/UnibergForAndroid/!svn/ver/163/Galaxy_Tablet/Uniberg/src/com/forside/android/vending/ILicenseCheck.java
+END
+VerizonLicenseCheck.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/UnibergForAndroid/!svn/ver/163/Galaxy_Tablet/Uniberg/src/com/forside/android/vending/VerizonLicenseCheck.java
+END

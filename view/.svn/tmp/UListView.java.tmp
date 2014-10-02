@@ -1,0 +1,613 @@
+/**
+ * File: $URL: $
+ *
+ * Abstract: List containing items 
+ *
+ * Documents: A reference to the applicable design documents.
+ *
+ * Author: ScrollMotion
+ * 
+ * Date: 12th Nov 2010
+ *
+ * $Id: $
+ *
+ * Copyright Notice
+ *
+ */
+package com.forside.android.view;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+<<<<<<< .mine
+import com.forside.android.ZumbaDitchtheWorkoutJointhePar9780446558259HA.R;
+=======
+import com.forside.android.CapePerdido9780446509800HA.R;
+>>>>>>> .r191
+
+/**
+ * This class is used to display a content list. Item of this list is consist of
+ * tow text views. In this application these text views are used to display the
+ * chapter name and page number.
+ * 
+ * @author ScrollMotion
+ * 
+ */
+public class UListView extends LinearLayout {
+
+	private Context mContext;
+	/**
+	 * List title
+	 */
+	private UListTitleView title;
+	/**
+	 * Scrollable container for the list
+	 */
+	private ScrollView mScrollView;
+	/**
+	 * Container for the list items
+	 */
+	private LinearLayout container;
+	/**
+	 * Counter to maintain the list item's position index.
+	 */
+	private int count = (-1);
+	/**
+	 * Listens the onclick event on list item.
+	 */
+	private OnListItemClickListener listener;
+	/**
+	 * Listens the onclick event on the list title.
+	 */
+	private OnTitleBarClickListener titleBarClickListener;
+
+	/**
+	 * used to store the x co-ordinate value when first touch with the list is
+	 * made
+	 */
+	private float preX;
+	/**
+	 * used to store the y co-ordinate value when first touch with the list is
+	 * made
+	 */
+	private float preY;
+	/**
+	 * used for the tap listener for each row of the list
+	 */
+	private OnTapListener mOnTapListener;
+	/**
+	 * to refer to the edit text used for accepting page number for go to
+	 * functionality
+	 */
+	private EditText editor;
+
+	private OnGoEventListener mOnGoEventListener;
+
+	/**
+	 * Listener for Tap event of List.
+	 * 
+	 * @author ScrollMotion
+	 * 
+	 */
+	public interface OnTapListener {
+		/**
+		 * Handles the tap event.
+		 */
+		public void onTap(View v);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param context
+	 */
+	public UListView(Context context) {
+		super(context);
+		this.mContext = context;
+		mScrollView = new ScrollView(mContext);
+		mScrollView.setFocusable(true);
+		mScrollView.setClickable(true);
+		mScrollView.setFocusableInTouchMode(true);
+		mScrollView.setVerticalFadingEdgeEnabled(false);
+		mScrollView.setPadding(0, 0, 0, 0);
+
+		container = new LinearLayout(mContext);
+		container.setOrientation(LinearLayout.VERTICAL);
+		container.setFocusable(true);
+		container.setClickable(true);
+		container.setFocusableInTouchMode(true);
+		container.setPadding(0, 0, 0, 0);
+
+		setOrientation(LinearLayout.VERTICAL);
+		LinearLayout.LayoutParams paramsUU = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT);
+		title = new UListTitleView(mContext);
+		addView(title, paramsUU);
+		title.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// titleBarClickListener.onTitleBarClicked();
+			}
+		});
+		title.setOnDragListener(new OnDragListener() {
+			@Override
+			public void onDrag(int distance) {
+				if ((UListView.this.getHeight() - distance) > title.getHeight()) {
+					RelativeLayout.LayoutParams paramsUU = new RelativeLayout.LayoutParams(
+							RelativeLayout.LayoutParams.FILL_PARENT,
+							UListView.this.getHeight() - distance);
+					paramsUU.addRule(RelativeLayout.ALIGN_BOTTOM, 1);
+					UListView.this.setLayoutParams(paramsUU);
+				}
+			}
+		});
+
+		mScrollView.addView(container, ViewGroup.LayoutParams.FILL_PARENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
+		LinearLayout.LayoutParams scrlParams = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT);
+		addView(mScrollView, scrlParams);
+
+		setClickable(true);
+		setFocusable(true);
+		setFocusableInTouchMode(true);
+
+	}
+
+	/**
+	 * Adds an item to the list
+	 * 
+	 * @param chapterName
+	 *            Chapter name
+	 * @param pageNumber
+	 *            page number
+	 */
+	public void add(String chapterName, String pageNumber) {
+		UCombinedTextView u = new UCombinedTextView(mContext, chapterName,
+				pageNumber, ++count);
+		LinearLayout.LayoutParams paramsUU = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT);
+		container.addView(u, paramsUU);
+	}
+
+	/**
+	 * Sets a listener to listen onclick event on list title.
+	 * 
+	 * @param listener
+	 */
+	public void setTitleBarClickListener(OnTitleBarClickListener listener) {
+		this.titleBarClickListener = listener;
+	}
+
+	/**
+	 * Sets a listener to listen onclick event on list item.
+	 * 
+	 * @param listener
+	 */
+	public void setListItemClickListener(OnListItemClickListener listener) {
+		this.listener = listener;
+	}
+
+	/**
+	 * Sets the listener to capture click event on go button
+	 * 
+	 * @param mOnGoEventListener
+	 */
+	public void setOnGoEventListener(OnGoEventListener mOnGoEventListener) {
+		this.mOnGoEventListener = mOnGoEventListener;
+	}
+
+	/**
+	 * Listener to listen onclick event on list item
+	 * 
+	 * @author ScrollMotion
+	 * 
+	 */
+	public interface OnListItemClickListener {
+		void onListItemClicked(int itemIndex);
+	}
+
+	/**
+	 * Listeber to listen onclick event on list's title bar
+	 * 
+	 * @author ScrollMotion
+	 * 
+	 */
+	public interface OnTitleBarClickListener {
+		void onTitleBarClicked();
+	}
+
+	/**
+	 * This class is responsible to handle onclick and ontouch event of list
+	 * items
+	 * 
+	 * @author ScrollMotion
+	 * 
+	 */
+	private class OnItemClickListener implements OnClickListener,
+			OnTouchListener {
+		@Override
+		public void onClick(View v) {
+			if (v instanceof UCombinedTextView) {
+//				onItemClicked(((UCombinedTextView) v).getItemIndex());
+				onItemClicked(((UCombinedTextView) v).getPageNumber());
+			}
+		}
+
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+
+			if (v instanceof UCombinedTextView
+					&& event.getAction() == MotionEvent.ACTION_DOWN) {
+//				onItemClicked(((UCombinedTextView) v).getItemIndex());
+				onItemClicked(((UCombinedTextView) v).getPageNumber());
+				return true;
+			}
+			return false;
+		}
+	}
+
+	private void onItemClicked(int index) {
+		if (listener != null && index != -1) {
+			listener.onListItemClicked(index);
+		}
+	}
+
+	/**
+	 * This class represents an item in list.
+	 * 
+	 * @author ScrollMotion
+	 * 
+	 */
+	private class UCombinedTextView extends RelativeLayout {
+
+		private Context mContext;
+		private String mChapterName;
+		private String mPageNumber;
+		/**
+		 * Index of the item in a list
+		 */
+		private int itemIndex;
+
+		private TextView frstLine = null;
+
+		private int pageNumFontColor = 0xff3399cc;
+
+		public int getPageNumber(){
+			return Integer.parseInt(mPageNumber);
+		}
+		public UCombinedTextView(Context context, String mChapterName,
+				String mPageNumber, int itemIndex) {
+			super(context);
+			this.mContext = context;
+			this.mChapterName = mChapterName;
+			this.mPageNumber = mPageNumber;
+			this.itemIndex = itemIndex;
+			setBackgroundResource(R.drawable.cell_bg_contents);
+			setPadding(15, 10, 10, 15);
+			setFocusable(true);
+			setClickable(true);
+			setFocusableInTouchMode(true);
+			createView();
+			this.setTapListener();
+			// this.setOnClickListener(new OnItemClickListener());
+			this.setOnTouchListener(new OnTouchListener() {
+
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					if (UCombinedTextView.this.onTouchEvent(event)) {
+						return true;
+					}
+					return false;
+				}
+			});
+
+		}
+
+		/**
+		 * Function to set the tap listener for each row (of the list)
+		 * representing chapter name and its page number
+		 */
+		public void setTapListener() {
+			UCombinedTextView.this
+					.setOnTapListener(new UListView.OnTapListener() {
+
+						@Override
+						public void onTap(View v) {
+							onItemClicked(((UCombinedTextView) v)
+									.getPageNumber());
+						}
+					});
+		}
+
+		/**
+		 * Function to initialize the mOnTapListener variable to the parameter
+		 * passed to this method
+		 * 
+		 * @param onTapListener
+		 */
+		private void setOnTapListener(
+				com.forside.android.view.UListView.OnTapListener onTapListener) {
+			mOnTapListener = onTapListener;
+
+		}
+
+		/**
+		 * This method checks whether the event is onTap or not
+		 */
+		@Override
+		public boolean onTouchEvent(MotionEvent ev) {
+			// the first touch co-ordinates are set to these variables to
+			// compare them with the co-ordinates
+			// when the touch is released
+			if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+				UCombinedTextView.this.requestFocus();
+				preX = ev.getRawX();
+				preY = ev.getRawY();
+			}
+			if (ev.getAction() == MotionEvent.ACTION_UP) {
+				// when touch is released
+				UCombinedTextView.this.requestFocus();
+				float x = ev.getRawX();
+				float y = ev.getRawY();
+
+				if (((x >= (preX - 20)) && (x <= (preX + 20)))
+						&& (y >= (preY - 5) && (y <= (preY + 5)))) {
+					// the touch was a tap
+					if (mOnTapListener != null) {
+						mOnTapListener.onTap(UCombinedTextView.this);
+					}
+				}
+			}
+			return super.onTouchEvent(ev);
+		}
+
+		/**
+		 * to get the location of the selected row in the list
+		 * 
+		 * @return location of selected row in list
+		 */
+		int getItemIndex() {
+			return itemIndex;
+		}
+
+		private void createView() {
+			final TextView chaptrName = new TextView(mContext);
+			chaptrName.setText(this.mChapterName);
+			chaptrName.setTextColor(Color.WHITE);
+			chaptrName.setTextSize(15);
+			frstLine = new TextView(mContext);
+			frstLine.setText(this.mPageNumber);
+			frstLine.setTextColor(pageNumFontColor);
+			frstLine.setTextSize(15);
+			frstLine.setPadding(0, 0, 15, 0);
+			LayoutParams params2 = new LayoutParams(LayoutParams.WRAP_CONTENT,
+					LayoutParams.WRAP_CONTENT);
+			params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+			params2.addRule(RelativeLayout.CENTER_VERTICAL);
+			frstLine.setId(2);
+			addView(frstLine, params2);
+
+			LayoutParams params1 = new LayoutParams(LayoutParams.WRAP_CONTENT,
+					LayoutParams.WRAP_CONTENT);
+			params1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+			params1.addRule(RelativeLayout.CENTER_VERTICAL);
+			params1.addRule(RelativeLayout.LEFT_OF, 2);
+			chaptrName.setId(1);
+			addView(chaptrName, params1);
+
+		}
+
+		@Override
+		public void setSelected(boolean selected) {
+			if (selected) {
+				pageNumFontColor = Color.WHITE;
+				if (frstLine != null)
+					frstLine.setTextColor(pageNumFontColor);
+				setBackgroundResource(R.drawable.cell_bg_contents_tap);
+				// setBackgroundColor(0xff3399cc);
+			} else {
+				pageNumFontColor = 0xff3399cc;
+				if (frstLine != null)
+					frstLine.setTextColor(pageNumFontColor);
+				setBackgroundResource(R.drawable.cell_bg_contents);
+				// setBackgroundColor(Color.BLACK);
+			}
+			super.setSelected(selected);
+		}
+
+		@Override
+		protected void onFocusChanged(boolean gainFocus, int direction,
+				Rect previouslyFocusedRect) {
+			setSelected(gainFocus);
+			super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+		}
+	}
+
+	private interface OnDragListener {
+		void onDrag(int distance);
+	}
+
+	/**
+	 * This class represents the title of the List.
+	 * 
+	 * @author ScrollMotion
+	 * 
+	 */
+	private class UListTitleView extends RelativeLayout {
+
+		/**
+		 * Title text font size.
+		 */
+		private static final int TITLE_TEXT_SIZE = 18;
+		/**
+		 * Title text left padding.
+		 */
+		private static final int PADDING_LEFT = 15;
+		/**
+		 * Title text right padding.
+		 */
+		private static final int PADDING_RIGHT = 2;
+
+		private float preY;
+
+		private OnDragListener mOnDragListener;
+
+		UListTitleView(Context context) {
+			super(context);
+			setBackgroundResource(R.drawable.drag_bar_contents);
+			setPadding(0, 0, 0, 0);
+			TextView contentsTitle = new TextView(context);
+			contentsTitle.setText(R.string.contents_title);
+			contentsTitle.setTextSize(TITLE_TEXT_SIZE);
+			contentsTitle.setTypeface(Typeface.DEFAULT_BOLD);
+			contentsTitle.setPadding(PADDING_LEFT, 0, PADDING_RIGHT, 0);
+
+			contentsTitle.setTextColor(Color.WHITE);
+			LayoutParams params1 = new LayoutParams(LayoutParams.WRAP_CONTENT,
+					LayoutParams.WRAP_CONTENT);
+			params1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+			params1.addRule(RelativeLayout.CENTER_VERTICAL);
+			contentsTitle.setId(1);
+
+			addView(contentsTitle, params1);
+			Button go = new Button(context);
+			go.setClickable(true);
+			go.setBackgroundResource(R.drawable.go_button);
+			LayoutParams params2 = new LayoutParams(LayoutParams.WRAP_CONTENT,
+					LayoutParams.WRAP_CONTENT);
+			params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+			params2.addRule(RelativeLayout.CENTER_VERTICAL);
+			params2.setMargins(0, 0, Utility.ConvertDPToPix(context,10), 0);
+			go.setId(2);
+			go.setLayoutParams(params2);
+			go.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (mOnGoEventListener != null) {
+						mOnGoEventListener.onEvent(editor.getText().toString());
+					}
+				}
+			});
+			addView(go, params2);
+			editor = new EditText(context);
+			editor.setHint(R.string.contents_editor_hint);
+			LayoutParams params3 = new LayoutParams(Utility.ConvertDPToPix(context,70),Utility.ConvertDPToPix(context, 38));
+			params3.addRule(RelativeLayout.LEFT_OF, 2);
+			//Change pix to DP to ensure it works in different screens.
+			params3.setMargins(0,Utility.ConvertDPToPix(context,3),Utility.ConvertDPToPix(context,5),0);
+			
+			editor.setId(3);
+			editor.setTextSize(13);
+			InputFilter[] filterArray = new InputFilter[1];
+			filterArray[0] = new InputFilter.LengthFilter(3);
+			editor.setFilters(filterArray);
+			editor.setInputType(InputType.TYPE_CLASS_NUMBER);
+			editor.setOnKeyListener(new OnKeyListener() {
+				public boolean onKey(View v, int keyCode, KeyEvent event) {
+					if ((event.getAction() == KeyEvent.ACTION_DOWN)
+							&& (keyCode == KeyEvent.KEYCODE_ENTER)) {
+						hideVirtualKeypad();
+						return true;
+					}
+					return false;
+				}
+			});
+			editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+				@Override
+				public void onFocusChange(View v, boolean hasFocus) {
+					if (hasFocus)
+						editor.setHint("");
+					else
+						editor.setHint(R.string.contents_editor_hint);
+				}
+			});
+			addView(editor, params3);
+
+		}
+
+		public void setOnDragListener(OnDragListener onDragListener) {
+			mOnDragListener = onDragListener;
+		}
+
+		@Override
+		public boolean onTouchEvent(MotionEvent event) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				preY = event.getRawY();
+			}
+
+			if (event.getAction() == MotionEvent.ACTION_UP) {
+				drag(event.getRawY());
+			}
+
+			if (event.getAction() == MotionEvent.ACTION_MOVE) {
+				drag(event.getRawY());
+			}
+
+			return super.onTouchEvent(event);
+		}
+
+		/**
+		 * Drags the list
+		 * 
+		 * @param temp
+		 */
+		void drag(float temp) {
+			int i = 0;
+			if (mOnDragListener != null) {
+				if (temp < preY) {
+					i = -1;
+				} else if (temp > preY) {
+					i = 1;
+				}
+				mOnDragListener.onDrag((int) (temp - preY) + i);
+			}
+			preY = temp;
+		}
+	}
+
+	/**
+	 * Hides the virtual keypad.
+	 */
+	public void hideVirtualKeypad() {
+		InputMethodManager imm = (InputMethodManager) mContext
+				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(editor.getApplicationWindowToken(), 0);
+
+	}
+
+	/**
+	 * A listener which will be called on go button click event.
+	 * 
+	 * @author ScrollMotion
+	 * 
+	 */
+	public interface OnGoEventListener {
+		/**
+		 * Handles the onclick event on go button
+		 * 
+		 * @param text
+		 *            text in content's editor. (page number entered by user)
+		 */
+		void onEvent(String text);
+	}
+
+}
